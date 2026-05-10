@@ -721,7 +721,7 @@ const STATIONS = [
   {name:"Mansarovar Park",lat:28.6714,lng:77.2998,line:"Red"},
   {name:"Jhilmil",lat:28.6720,lng:77.3082,line:"Red"},
   {name:"Dilshad Garden",lat:28.6740,lng:77.3208,line:"Red"},
-  // Green Line (partial)
+  // Green Line
   {name:"Inderlok",lat:28.6724,lng:77.1801,line:"Green"},
   {name:"Ashok Park Main",lat:28.6660,lng:77.1668,line:"Green"},
   {name:"Punjabi Bagh West",lat:28.6671,lng:77.1539,line:"Green"},
@@ -752,6 +752,165 @@ const STATIONS = [
   {name:"YMCA Chowk Faridabad",lat:28.4724,lng:77.3110,line:"Violet"},
   {name:"Bata Chowk Faridabad",lat:28.4620,lng:77.3133,line:"Violet"},
   {name:"Escorts Mujesar",lat:28.4519,lng:77.3161,line:"Violet"},
+];
+
+// ── LARGE PLACE DATABASE (instant, no API) ───────────────
+const PLACES = [
+  // Monuments & Heritage
+  {n:"Qutub Minar",a:"Mehrauli, South Delhi",i:"🏛",lat:28.5245,lng:77.1855},
+  {n:"India Gate",a:"Rajpath, New Delhi",i:"🇮🇳",lat:28.6129,lng:77.2295},
+  {n:"Red Fort",a:"Chandni Chowk, Old Delhi",i:"🏰",lat:28.6562,lng:77.2410},
+  {n:"Humayun's Tomb",a:"Nizamuddin East",i:"🕌",lat:28.5933,lng:77.2507},
+  {n:"Jama Masjid",a:"Old Delhi",i:"🕌",lat:28.6507,lng:77.2360},
+  {n:"Purana Qila",a:"Pragati Maidan area",i:"🏰",lat:28.6106,lng:77.2421},
+  {n:"Jantar Mantar",a:"Connaught Place",i:"🔭",lat:28.6270,lng:77.2167},
+  {n:"Rajghat",a:"Ring Road, Old Delhi",i:"🕊",lat:28.6399,lng:77.2497},
+  {n:"Safdarjung Tomb",a:"Safdarjung, South Delhi",i:"🏛",lat:28.5917,lng:77.2067},
+  {n:"Tughlaqabad Fort",a:"Tughlaqabad",i:"🏰",lat:28.5072,lng:77.3020},
+  {n:"Lotus Temple",a:"Bahapur, South Delhi",i:"🌸",lat:28.5535,lng:77.2588},
+  {n:"Akshardham Temple",a:"Noida Link Road",i:"🛕",lat:28.6127,lng:77.2773},
+  {n:"ISKCON Temple",a:"Hare Krishna Hill, East Delhi",i:"🛕",lat:28.6288,lng:77.2887},
+  {n:"Gurudwara Bangla Sahib",a:"Connaught Place",i:"🛕",lat:28.6268,lng:77.2094},
+  {n:"Birla Mandir",a:"Mandir Marg, New Delhi",i:"🛕",lat:28.6354,lng:77.2003},
+  {n:"Kali Mandir Chittaranjan Park",a:"CR Park, South Delhi",i:"🛕",lat:28.5356,lng:77.2519},
+  // Markets & Shopping
+  {n:"Connaught Place",a:"New Delhi city centre",i:"🏙",lat:28.6315,lng:77.2167},
+  {n:"Chandni Chowk Market",a:"Old Delhi",i:"🛍",lat:28.6562,lng:77.2300},
+  {n:"Lajpat Nagar Market",a:"Lajpat Nagar, South Delhi",i:"🛒",lat:28.5676,lng:77.2433},
+  {n:"Karol Bagh Market",a:"Karol Bagh, Central Delhi",i:"👗",lat:28.6513,lng:77.1908},
+  {n:"Nehru Place Market",a:"Nehru Place, South Delhi",i:"🖥",lat:28.5490,lng:77.2510},
+  {n:"Sarojini Nagar Market",a:"Sarojini Nagar",i:"👚",lat:28.5753,lng:77.1957},
+  {n:"Janpath Market",a:"Connaught Place area",i:"🛍",lat:28.6266,lng:77.2209},
+  {n:"Khan Market",a:"Khan Market, Lutyens Delhi",i:"☕",lat:28.6000,lng:77.2270},
+  {n:"Dilli Haat INA",a:"INA Colony, South Delhi",i:"🎪",lat:28.5793,lng:77.2059},
+  {n:"Dilli Haat Pitampura",a:"Pitampura, North West Delhi",i:"🎪",lat:28.7023,lng:77.1402},
+  {n:"Palika Bazaar",a:"Connaught Place underground",i:"🏬",lat:28.6315,lng:77.2170},
+  {n:"Tibetan Market Janpath",a:"Janpath, New Delhi",i:"🛍",lat:28.6240,lng:77.2213},
+  {n:"Sector 18 Noida Market",a:"Sector 18, Noida",i:"🛒",lat:28.5708,lng:77.3213},
+  {n:"Gaffar Market",a:"Karol Bagh",i:"📱",lat:28.6490,lng:77.1870},
+  {n:"Khari Baoli Spice Market",a:"Chandni Chowk",i:"🌶",lat:28.6571,lng:77.2231},
+  {n:"Kinari Bazaar",a:"Chandni Chowk",i:"🎀",lat:28.6558,lng:77.2288},
+  // Malls
+  {n:"Select Citywalk Mall",a:"Saket, South Delhi",i:"🏬",lat:28.5285,lng:77.2155},
+  {n:"DLF Mall of India",a:"Sector 18, Noida",i:"🏢",lat:28.5673,lng:77.3229},
+  {n:"Ambience Mall Gurgaon",a:"NH-48, Gurgaon",i:"🏬",lat:28.5031,lng:77.0933},
+  {n:"Ambience Mall Vasant Kunj",a:"Vasant Kunj, South Delhi",i:"🏬",lat:28.5208,lng:77.1572},
+  {n:"Pacific Mall Tagore Garden",a:"Tagore Garden, West Delhi",i:"🏬",lat:28.6442,lng:77.1220},
+  {n:"Pacific Mall Subhash Nagar",a:"Subhash Nagar, West Delhi",i:"🏬",lat:28.6407,lng:77.1134},
+  {n:"Great India Place Mall",a:"Sector 38A, Noida",i:"🏬",lat:28.5708,lng:77.3213},
+  {n:"Omaxe Mall Noida",a:"Sector 19B, Noida",i:"🛍",lat:28.5705,lng:77.3226},
+  {n:"V3S Mall Laxmi Nagar",a:"Laxmi Nagar, East Delhi",i:"🏬",lat:28.6307,lng:77.2783},
+  {n:"Cross River Mall",a:"Shahdara, East Delhi",i:"🏬",lat:28.6705,lng:77.2884},
+  {n:"Ansal Plaza Mall",a:"Andrews Ganj, South Delhi",i:"🏬",lat:28.5629,lng:77.2240},
+  {n:"Unity One Mall Rohini",a:"Rohini, North West Delhi",i:"🏬",lat:28.7126,lng:77.1130},
+  {n:"DLF City Centre",a:"Sector 30, Gurgaon",i:"🏬",lat:28.4641,lng:77.0508},
+  {n:"MGF Metropolitan Mall",a:"Gurgaon",i:"🏬",lat:28.4758,lng:77.0629},
+  // Hospitals
+  {n:"AIIMS Delhi",a:"Ansari Nagar, South Delhi",i:"🏥",lat:28.5680,lng:77.2102},
+  {n:"Safdarjung Hospital",a:"Safdarjung, New Delhi",i:"🏥",lat:28.5692,lng:77.2065},
+  {n:"RML Hospital",a:"Connaught Place area",i:"🏥",lat:28.6354,lng:77.2060},
+  {n:"Fortis Hospital Vasant Kunj",a:"Vasant Kunj, South Delhi",i:"🏥",lat:28.5195,lng:77.1580},
+  {n:"Max Hospital Saket",a:"Saket, South Delhi",i:"🏥",lat:28.5253,lng:77.2166},
+  {n:"Apollo Hospital Jasola",a:"Jasola, South East Delhi",i:"🏥",lat:28.5372,lng:77.2912},
+  {n:"GTB Hospital",a:"Dilshad Garden, East Delhi",i:"🏥",lat:28.6740,lng:77.3208},
+  {n:"Lok Nayak Hospital",a:"Daryaganj, Old Delhi",i:"🏥",lat:28.6449,lng:77.2378},
+  {n:"Sir Ganga Ram Hospital",a:"Rajinder Nagar",i:"🏥",lat:28.6471,lng:77.1822},
+  {n:"Medanta Medicity",a:"Sector 38, Gurgaon",i:"🏥",lat:28.4459,lng:77.0426},
+  {n:"Kailash Hospital Noida",a:"Sector 27, Noida",i:"🏥",lat:28.5700,lng:77.3340},
+  // Education
+  {n:"Delhi University North Campus",a:"GTB Nagar, North Delhi",i:"🎓",lat:28.6878,lng:77.2107},
+  {n:"Delhi University South Campus",a:"Dhaula Kuan, South Delhi",i:"🎓",lat:28.5605,lng:77.1877},
+  {n:"IIT Delhi",a:"Hauz Khas, South Delhi",i:"🎓",lat:28.5456,lng:77.1926},
+  {n:"JNU Campus",a:"Munirka, South West Delhi",i:"🎓",lat:28.5384,lng:77.1672},
+  {n:"Jamia Millia Islamia",a:"Okhla, South East Delhi",i:"🎓",lat:28.5624,lng:77.2797},
+  {n:"Delhi Technological University",a:"Rohini, North Delhi",i:"🎓",lat:28.7501,lng:77.1175},
+  {n:"NSIT Dwarka",a:"Dwarka, West Delhi",i:"🎓",lat:28.6126,lng:77.0322},
+  {n:"Amity University Noida",a:"Sector 125, Noida",i:"🎓",lat:28.5445,lng:77.3325},
+  {n:"Sharda University",a:"Greater Noida",i:"🎓",lat:28.4689,lng:77.4734},
+  // Transport
+  {n:"IGI Airport Terminal 1",a:"Indira Gandhi International Airport",i:"✈️",lat:28.5665,lng:77.1010},
+  {n:"IGI Airport Terminal 3",a:"Indira Gandhi International Airport",i:"✈️",lat:28.5562,lng:77.0999},
+  {n:"New Delhi Railway Station",a:"Paharganj, Central Delhi",i:"🚆",lat:28.6425,lng:77.2197},
+  {n:"Hazrat Nizamuddin Railway Station",a:"Nizamuddin, South Delhi",i:"🚆",lat:28.5874,lng:77.2520},
+  {n:"Anand Vihar ISBT",a:"Anand Vihar, East Delhi",i:"🚌",lat:28.6469,lng:77.3152},
+  {n:"Kashmere Gate ISBT",a:"Kashmere Gate, Old Delhi",i:"🚌",lat:28.6671,lng:77.2283},
+  {n:"Sarai Kale Khan ISBT",a:"Nizamuddin West",i:"🚌",lat:28.5894,lng:77.2577},
+  // Parks & Recreation
+  {n:"Lodi Garden",a:"Lodi Road, South Delhi",i:"🌳",lat:28.5931,lng:77.2200},
+  {n:"Nehru Park Chanakyapuri",a:"Chanakyapuri, New Delhi",i:"🌳",lat:28.5975,lng:77.1905},
+  {n:"Sanjay Van",a:"Vasant Kunj area",i:"🌲",lat:28.5327,lng:77.1745},
+  {n:"Garden of Five Senses",a:"Said-ul-Ajaib, South Delhi",i:"🌿",lat:28.5088,lng:77.1878},
+  {n:"Botanical Garden Noida",a:"Sector 38A, Noida",i:"🌳",lat:28.5619,lng:77.3385},
+  {n:"Yamuna Biodiversity Park",a:"Wazirabad, North Delhi",i:"🌿",lat:28.7411,lng:77.1953},
+  {n:"Deer Park Hauz Khas",a:"Hauz Khas, South Delhi",i:"🦌",lat:28.5495,lng:77.2006},
+  // Business & IT
+  {n:"DLF Cyber City",a:"Sector 24-25, Gurgaon",i:"💻",lat:28.4958,lng:77.0882},
+  {n:"Noida Sector 62 IT Hub",a:"Sector 62, Noida",i:"💻",lat:28.6271,lng:77.3703},
+  {n:"Noida Sector 63",a:"Sector 63, Noida",i:"🏢",lat:28.6209,lng:77.3831},
+  {n:"Jasola Tech Park",a:"Jasola, South Delhi",i:"🏢",lat:28.5355,lng:77.2941},
+  {n:"Okhla Industrial Area",a:"Okhla, South Delhi",i:"🏭",lat:28.5273,lng:77.2745},
+  {n:"Pragati Maidan Exhibition",a:"Bhairon Road, Central Delhi",i:"🏗",lat:28.6189,lng:77.2541},
+  // Residential Colonies
+  {n:"Dwarka Sector 10",a:"Dwarka, South West Delhi",i:"🏘",lat:28.5804,lng:77.0785},
+  {n:"Dwarka Sector 12",a:"Dwarka, South West Delhi",i:"🏘",lat:28.5930,lng:77.0844},
+  {n:"Rohini Sector 9",a:"Rohini, North West Delhi",i:"🏘",lat:28.7126,lng:77.1130},
+  {n:"Pitampura",a:"North West Delhi",i:"🏘",lat:28.7023,lng:77.1402},
+  {n:"Vasant Kunj",a:"South West Delhi",i:"🏘",lat:28.5208,lng:77.1572},
+  {n:"Vasant Vihar",a:"South West Delhi",i:"🏘",lat:28.5555,lng:77.1700},
+  {n:"Hauz Khas Enclave",a:"South Delhi",i:"🏘",lat:28.5433,lng:77.2063},
+  {n:"Greater Kailash 1",a:"GK1, South Delhi",i:"🏘",lat:28.5507,lng:77.2323},
+  {n:"Greater Kailash 2",a:"GK2, South Delhi",i:"🏘",lat:28.5436,lng:77.2413},
+  {n:"South Extension",a:"South Delhi",i:"🏘",lat:28.5688,lng:77.2166},
+  {n:"Defence Colony",a:"South Delhi",i:"🏘",lat:28.5684,lng:77.2289},
+  {n:"Green Park",a:"South Delhi",i:"🏘",lat:28.5606,lng:77.2069},
+  {n:"Malviya Nagar",a:"South Delhi",i:"🏘",lat:28.5285,lng:77.2055},
+  {n:"Patel Nagar",a:"Central Delhi",i:"🏘",lat:28.6479,lng:77.1605},
+  {n:"Rajouri Garden",a:"West Delhi",i:"🏘",lat:28.6478,lng:77.1323},
+  {n:"Janakpuri",a:"West Delhi",i:"🏘",lat:28.6249,lng:77.0891},
+  {n:"Tilak Nagar",a:"West Delhi",i:"🏘",lat:28.6370,lng:77.1021},
+  {n:"Uttam Nagar",a:"West Delhi",i:"🏘",lat:28.6234,lng:77.0748},
+  {n:"Mayur Vihar Phase 1",a:"East Delhi",i:"🏘",lat:28.6077,lng:77.2953},
+  {n:"Mayur Vihar Phase 2",a:"East Delhi",i:"🏘",lat:28.6010,lng:77.3103},
+  {n:"Preet Vihar",a:"East Delhi",i:"🏘",lat:28.6467,lng:77.2978},
+  {n:"Laxmi Nagar",a:"East Delhi",i:"🏘",lat:28.6307,lng:77.2783},
+  {n:"Dilshad Garden",a:"East Delhi",i:"🏘",lat:28.6740,lng:77.3208},
+  {n:"Shahdara",a:"East Delhi",i:"🏘",lat:28.6705,lng:77.2884},
+  {n:"Vivek Vihar",a:"East Delhi",i:"🏘",lat:28.6712,lng:77.3200},
+  {n:"Indirapuram",a:"Ghaziabad near Noida",i:"🏘",lat:28.6412,lng:77.3665},
+  {n:"Vaishali",a:"Ghaziabad",i:"🏘",lat:28.6379,lng:77.3437},
+  {n:"Kaushambi",a:"Ghaziabad",i:"🏘",lat:28.6459,lng:77.3290},
+  {n:"Noida Sector 15",a:"Noida",i:"🏘",lat:28.5917,lng:77.3214},
+  {n:"Noida Sector 16",a:"Noida",i:"🏘",lat:28.5860,lng:77.3231},
+  {n:"Noida Sector 18",a:"Noida",i:"🏘",lat:28.5708,lng:77.3213},
+  {n:"Noida Sector 34",a:"Noida",i:"🏘",lat:28.5789,lng:77.3423},
+  {n:"Noida Sector 50",a:"Noida",i:"🏘",lat:28.6049,lng:77.3600},
+  {n:"Noida Sector 51",a:"Noida",i:"🏘",lat:28.6100,lng:77.3640},
+  {n:"Noida Sector 52",a:"Noida",i:"🏘",lat:28.6049,lng:77.3689},
+  {n:"Noida Sector 55",a:"Noida",i:"🏘",lat:28.6156,lng:77.3700},
+  {n:"Noida Sector 56",a:"Noida",i:"🏘",lat:28.6180,lng:77.3750},
+  {n:"Noida Sector 61",a:"Noida",i:"🏘",lat:28.6156,lng:77.3763},
+  {n:"Noida Sector 62",a:"Noida",i:"🏘",lat:28.6271,lng:77.3703},
+  {n:"Noida Sector 63",a:"Noida",i:"🏘",lat:28.6209,lng:77.3831},
+  {n:"Noida City Centre",a:"Sector 32, Noida",i:"🏙",lat:28.5735,lng:77.3563},
+  {n:"Greater Noida",a:"Greater Noida",i:"🏘",lat:28.4689,lng:77.5100},
+  {n:"Gurgaon Sector 14",a:"Gurgaon",i:"🏘",lat:28.4641,lng:77.0282},
+  {n:"Gurgaon Sector 29",a:"Huda City Centre area",i:"🏘",lat:28.4595,lng:77.0724},
+  {n:"Gurugram Golf Course Road",a:"Gurgaon",i:"🏙",lat:28.4479,lng:77.1026},
+  {n:"Sohna Road Gurgaon",a:"Gurgaon",i:"🏘",lat:28.4215,lng:77.0300},
+  // Food & Entertainment
+  {n:"Hauz Khas Village",a:"Hauz Khas, South Delhi",i:"🎨",lat:28.5495,lng:77.2006},
+  {n:"Majnu Ka Tilla",a:"Tibetan Colony, North Delhi",i:"🍜",lat:28.7026,lng:77.2309},
+  {n:"Nizamuddin Dargah",a:"Nizamuddin West",i:"🕌",lat:28.5895,lng:77.2469},
+  {n:"Amar Colony Market",a:"Lajpat Nagar",i:"🛒",lat:28.5617,lng:77.2419},
+  {n:"Hudson Lane",a:"GTB Nagar, North Delhi",i:"☕",lat:28.6938,lng:77.2074},
+  {n:"Cyber Hub Gurgaon",a:"DLF Cyber City, Gurgaon",i:"🍺",lat:28.4943,lng:77.0882},
+  {n:"Worlds of Wonder",a:"Sector 38A, Noida",i:"🎢",lat:28.5695,lng:77.3200},
+  // Museums & Culture
+  {n:"National Museum",a:"Janpath, New Delhi",i:"🏛",lat:28.6116,lng:77.2199},
+  {n:"National Gallery of Modern Art",a:"Jaipur House, New Delhi",i:"🎨",lat:28.6130,lng:77.2310},
+  {n:"Crafts Museum",a:"Pragati Maidan",i:"🏺",lat:28.6189,lng:77.2491},
+  {n:"National Science Centre",a:"Bhairon Road",i:"🔬",lat:28.6202,lng:77.2562},
+  {n:"Rail Museum",a:"Chanakyapuri",i:"🚂",lat:28.5877,lng:77.1878},
 ];
 
 // ── STATE ──────────────────────────────────────────────────
@@ -884,96 +1043,77 @@ function selectStation(i) {
   checkPlanBtn();
 }
 
-// ── DESTINATION SEARCH — NOMINATIM GEOCODING ─────────────
-let searchTimer = null;
-let geocodeResults = [];
-
+// ── INSTANT SEARCH ENGINE ─────────────────────────────────
 function onSearchInput() {
-  const q = document.getElementById('destSearch').value.trim();
-  clearTimeout(searchTimer);
+  const q = document.getElementById('destSearch').value.trim().toLowerCase();
   const dd = document.getElementById('destDropdown');
-  if (q.length < 3) { dd.classList.remove('show'); return; }
-  dd.innerHTML = '<div class="dropdown-empty">🔍 Searching…</div>';
+  if (q.length === 0) { dd.classList.remove('show'); return; }
+
+  const scored = PLACES.map(p => {
+    const name = p.n.toLowerCase();
+    const area = p.a.toLowerCase();
+    let score = 0;
+    if (name === q) score = 1000;
+    else if (name.startsWith(q)) score = 800;
+    else if (name.includes(q)) score = 600;
+    else if (area.includes(q)) score = 400;
+    else {
+      const words = q.split(' ').filter(w => w.length > 1);
+      const matched = words.filter(w => name.includes(w) || area.includes(w));
+      score = matched.length * 150;
+    }
+    return {...p, score};
+  }).filter(p => p.score > 0)
+    .sort((a,b) => b.score - a.score)
+    .slice(0, 15);
+
+  if (scored.length === 0) {
+    dd.innerHTML = `<div class="dropdown-empty">😕 No results — try shorter keyword</div>`;
+    dd.classList.add('show');
+    return;
+  }
+
+  const existing = destinations.map(d => d.name);
+  const items = scored.filter(p => !existing.includes(p.n));
+
+  dd.innerHTML = items.map(p => {
+    const nearest = findNearestStation(p.lat, p.lng);
+    const idx = PLACES.indexOf(p);
+    return `<div class="dropdown-item" onclick="addPlaceDestination(${idx})">
+      <div class="di-icon">${p.i}</div>
+      <div style="flex:1">
+        <div class="di-name">${highlightMatch(p.n, q)}</div>
+        <div class="di-sub">${p.a}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="ni-line-badge ${lineClass(nearest.line)}" style="font-size:9px;padding:2px 6px">${nearest.line}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px">${nearest.name}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="dropdown-empty">All matches already added</div>';
+
   dd.classList.add('show');
-  searchTimer = setTimeout(() => geocodeSearch(q), 400);
+}
+
+function highlightMatch(text, q) {
+  if (!q) return text;
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return text;
+  return text.slice(0,idx)
+    + '<strong style="color:white">' + text.slice(idx, idx+q.length) + '</strong>'
+    + text.slice(idx+q.length);
 }
 
 function onSearchKey(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    const q = document.getElementById('destSearch').value.trim();
-    if (q.length >= 3) geocodeSearch(q, true);
-  }
-  if (e.key === 'Escape') {
-    document.getElementById('destDropdown').classList.remove('show');
-  }
+  if (e.key === 'Escape') document.getElementById('destDropdown').classList.remove('show');
 }
 
-async function geocodeSearch(q, forceFirst = false) {
-  const icon = document.getElementById('searchIconEl');
-  icon.textContent = '⏳';
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ' Delhi NCR India')}&format=json&limit=7&addressdetails=1`;
-    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
-    const data = await res.json();
-    geocodeResults = data.filter(r => r.lat && r.lon);
-    icon.textContent = '🔍';
-    if (geocodeResults.length === 0) {
-      document.getElementById('destDropdown').innerHTML = '<div class="dropdown-empty">No places found — try a different name</div>';
-      document.getElementById('destDropdown').classList.add('show');
-      return;
-    }
-    if (forceFirst) { addGeoDestination(geocodeResults[0]); return; }
-    renderGeoDropdown(geocodeResults);
-  } catch {
-    icon.textContent = '🔍';
-    document.getElementById('destDropdown').innerHTML = '<div class="dropdown-empty">⚠️ Network error — check connection</div>';
-  }
-}
-
-function renderGeoDropdown(results) {
-  const dd = document.getElementById('destDropdown');
-  dd.innerHTML = results.map((r, i) => {
-    const name = r.display_name.split(',')[0];
-    const area = r.display_name.split(',').slice(1,3).join(',').trim();
-    return `<div class="dropdown-item" data-idx="${i}" onclick="addGeoDestination(geocodeResults[${i}])">
-      <div class="di-icon">${placeIcon(r)}</div>
-      <div>
-        <div class="di-name">${name}</div>
-        <div class="di-sub">${area}</div>
-      </div>
-    </div>`;
-  }).join('');
-  dd.classList.add('show');
-}
-
-function placeIcon(r) {
-  const t = ((r.type||'') + ' ' + (r.class||'')).toLowerCase();
-  if (t.includes('hospital') || t.includes('clinic'))                          return '🏥';
-  if (t.includes('school') || t.includes('university') || t.includes('college')) return '🎓';
-  if (t.includes('temple') || t.includes('mosque') || t.includes('church') || t.includes('place_of_worship')) return '🛕';
-  if (t.includes('mall') || t.includes('retail') || t.includes('shop'))        return '🛍';
-  if (t.includes('park') || t.includes('garden'))                               return '🌳';
-  if (t.includes('hotel'))                                                       return '🏨';
-  if (t.includes('restaurant') || t.includes('food'))                           return '🍽';
-  if (t.includes('station') || t.includes('metro') || t.includes('bus'))        return '🚉';
-  if (t.includes('airport'))                                                     return '✈️';
-  if (t.includes('residential') || t.includes('house'))                         return '🏠';
-  if (t.includes('office') || t.includes('commercial'))                         return '🏢';
-  return '📍';
-}
-
-function addGeoDestination(result) {
+function addPlaceDestination(idx) {
   if (destinations.length >= 6) { showToast('Max 6 destinations'); return; }
-  const name = result.display_name.split(',')[0];
-  const area = result.display_name.split(',').slice(1,3).join(',').trim();
-  const lat  = parseFloat(result.lat);
-  const lng  = parseFloat(result.lon);
-  if (destinations.find(d => d.name === name && Math.abs(d.lat - lat) < 0.0001)) {
-    showToast('Already added'); return;
-  }
-  const nearest = findNearestStation(lat, lng);
-  destinations.push({ name, area, lat, lng, icon: placeIcon(result), nearest: nearest.name, nearestLine: nearest.line, nearestDist: nearest.d });
+  const p = PLACES[idx];
+  if (destinations.find(d => d.name === p.n)) { showToast('Already added'); return; }
+  const nearest = findNearestStation(p.lat, p.lng);
+  destinations.push({ name:p.n, area:p.a, lat:p.lat, lng:p.lng, icon:p.i, nearest:nearest.name, nearestLine:nearest.line, nearestDist:nearest.d });
   renderChips();
   document.getElementById('destSearch').value = '';
   document.getElementById('destDropdown').classList.remove('show');
@@ -1040,7 +1180,8 @@ function planTrip() {
   let prevStation = boardStation;
 
   const cards = ordered.map((dest, i) => {
-    const alightStation = STATIONS.find(s => s.name === dest.nearest) || {name: dest.nearest, line: dest.nearestLine||'Blue', lat: dest.lat, lng: dest.lng};
+    const alightStation = STATIONS.find(s => s.name === dest.nearest)
+      || {name: dest.nearest, line: dest.nearestLine||'Blue', lat: dest.lat, lng: dest.lng};
     const d    = dist(prevStation.lat, prevStation.lng, alightStation.lat, alightStation.lng);
     const f    = fare(d);
     const mins = Math.max(5, Math.round(d / 400));
