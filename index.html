@@ -1049,7 +1049,7 @@ function onSearchInput() {
   const dd = document.getElementById('destDropdown');
   if (q.length === 0) { dd.classList.remove('show'); return; }
 
-  const scored = PLACES.map(p => {
+  const scored = PLACES.map((p, originalIdx) => {
     const name = p.n.toLowerCase();
     const area = p.a.toLowerCase();
     let score = 0;
@@ -1062,7 +1062,7 @@ function onSearchInput() {
       const matched = words.filter(w => name.includes(w) || area.includes(w));
       score = matched.length * 150;
     }
-    return {...p, score};
+    return {...p, score, originalIdx};
   }).filter(p => p.score > 0)
     .sort((a,b) => b.score - a.score)
     .slice(0, 15);
@@ -1078,8 +1078,8 @@ function onSearchInput() {
 
   dd.innerHTML = items.map(p => {
     const nearest = findNearestStation(p.lat, p.lng);
-    const idx = PLACES.indexOf(p);
-    return `<div class="dropdown-item" onclick="addPlaceDestination(${idx})">
+    
+    return `<div class="dropdown-item" onclick="addPlaceDestination(${p.originalIdx})">
       <div class="di-icon">${p.i}</div>
       <div style="flex:1">
         <div class="di-name">${highlightMatch(p.n, q)}</div>
