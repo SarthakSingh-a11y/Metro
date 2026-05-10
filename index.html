@@ -141,7 +141,9 @@ main {
   margin-bottom: 14px;
   transition: border-color 0.3s;
   animation: slideUp 0.4s ease both;
+  overflow: visible;
 }
+#card-dest { position: relative; z-index: 10; }
 .step-card:nth-child(1) { animation-delay: 0.05s; }
 .step-card:nth-child(2) { animation-delay: 0.1s; }
 .step-card:nth-child(3) { animation-delay: 0.15s; }
@@ -275,7 +277,7 @@ main {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 14px;
   max-height: 220px; overflow-y: auto;
-  z-index: 50;
+  z-index: 999;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 .dropdown.show { display: block; animation: fadeIn 0.15s ease; }
@@ -300,6 +302,12 @@ main {
 .dropdown-item .di-name { font-size: 14px; font-weight: 600; color: var(--text); }
 .dropdown-item .di-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
 .dropdown-empty { padding: 20px; text-align: center; color: var(--muted); font-size: 13px; }
+
+.search-hint {
+  font-size: 11px; color: var(--muted2);
+  margin-top: 8px; padding-left: 4px;
+  font-style: italic;
+}
 
 /* CHIPS */
 .chips-area {
@@ -331,6 +339,8 @@ main {
   padding: 16px 0 4px;
   font-style: italic;
 }
+.chip-near { font-size: 11px; color: var(--muted); font-weight: 400; }
+.chip-line-badge { font-size: 9px; padding: 2px 5px; border-radius: 4px; vertical-align: middle; }
 
 /* PLAN BUTTON */
 .plan-btn {
@@ -560,14 +570,19 @@ main {
       <div class="step-num" id="step2-num">2</div>
       <div>
         <div class="step-title">Add Destinations</div>
-        <div class="step-sub">Search any place in Delhi NCR</div>
+        <div class="step-sub">Type any place, colony or address in Delhi NCR</div>
       </div>
     </div>
     <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" id="destSearch" type="text" placeholder="Search any place — Qutub Minar, malls, temples…" autocomplete="off" oninput="searchDestinations()" onfocus="showDropdown()" />
+      <span class="search-icon" id="searchIconEl">🔍</span>
+      <input class="search-input" id="destSearch" type="text"
+        placeholder="e.g. Sector 62 Noida, Lajpat Nagar, any colony…"
+        autocomplete="off"
+        oninput="onSearchInput()"
+        onkeydown="onSearchKey(event)" />
       <div class="dropdown" id="destDropdown"></div>
     </div>
+    <p class="search-hint">Type anything — landmarks, colonies, addresses, hospitals…</p>
     <div class="chips-area" id="chipsArea">
       <div class="chips-empty" id="chipsEmpty">No destinations added yet</div>
     </div>
@@ -739,49 +754,11 @@ const STATIONS = [
   {name:"Escorts Mujesar",lat:28.4519,lng:77.3161,line:"Violet"},
 ];
 
-// ── DESTINATION DATA ───────────────────────────────────────
-const DESTINATIONS = [
-  {name:"Qutub Minar",icon:"🏛",cat:"Heritage",lat:28.5245,lng:77.1855,nearest:"Qutab Minar"},
-  {name:"India Gate",icon:"🇮🇳",cat:"Monument",lat:28.6129,lng:77.2295,nearest:"Central Secretariat"},
-  {name:"Red Fort",icon:"🏰",cat:"Heritage",lat:28.6562,lng:77.2410,nearest:"Lal Quila"},
-  {name:"Akshardham Temple",icon:"🛕",cat:"Temple",lat:28.6127,lng:77.2773,nearest:"Akshardham"},
-  {name:"Lotus Temple",icon:"🌸",cat:"Temple",lat:28.5535,lng:77.2588,nearest:"Kalkaji Mandir"},
-  {name:"Humayun's Tomb",icon:"🕌",cat:"Heritage",lat:28.5933,lng:77.2507,nearest:"Jangpura"},
-  {name:"Connaught Place",icon:"🏙",cat:"Market",lat:28.6315,lng:77.2167,nearest:"Rajiv Chowk"},
-  {name:"Chandni Chowk",icon:"🛍",cat:"Market",lat:28.6562,lng:77.2300,nearest:"Chandni Chowk"},
-  {name:"Lajpat Nagar Market",icon:"🛒",cat:"Market",lat:28.5676,lng:77.2433,nearest:"Lajpat Nagar"},
-  {name:"Saket Select Citywalk",icon:"🏬",cat:"Mall",lat:28.5285,lng:77.2155,nearest:"Saket"},
-  {name:"DLF Cyber City",icon:"💻",cat:"Business",lat:28.4958,lng:77.0882,nearest:"Sikanderpur"},
-  {name:"Omaxe Mall Noida",icon:"🛍",cat:"Mall",lat:28.5705,lng:77.3226,nearest:"Noida Sector 18"},
-  {name:"Hauz Khas Village",icon:"🎨",cat:"Cafe",lat:28.5495,lng:77.2006,nearest:"Hauz Khas"},
-  {name:"Dilli Haat INA",icon:"🎪",cat:"Market",lat:28.5793,lng:77.2059,nearest:"INA"},
-  {name:"IGI Airport T3",icon:"✈️",cat:"Transport",lat:28.5562,lng:77.0999,nearest:"Dwarka Sector 21"},
-  {name:"AIIMS Hospital",icon:"🏥",cat:"Hospital",lat:28.5680,lng:77.2088,nearest:"AIIMS"},
-  {name:"JNU Campus",icon:"🎓",cat:"Education",lat:28.5384,lng:77.1672,nearest:"Hauz Khas"},
-  {name:"IIT Delhi",icon:"🎓",cat:"Education",lat:28.5456,lng:77.1926,nearest:"Hauz Khas"},
-  {name:"Rajghat",icon:"🕊",cat:"Memorial",lat:28.6399,lng:77.2497,nearest:"ITO"},
-  {name:"Jantar Mantar",icon:"🔭",cat:"Heritage",lat:28.6270,lng:77.2167,nearest:"Patel Chowk"},
-  {name:"Garden of Five Senses",icon:"🌿",cat:"Park",lat:28.5088,lng:77.1878,nearest:"Saket"},
-  {name:"Nehru Place Market",icon:"🖥",cat:"Market",lat:28.5490,lng:77.2510,nearest:"Nehru Place"},
-  {name:"Karol Bagh Market",icon:"👗",cat:"Market",lat:28.6513,lng:77.1908,nearest:"Karol Bagh"},
-  {name:"DLF Mall of India",icon:"🏢",cat:"Mall",lat:28.5673,lng:77.3229,nearest:"Noida Sector 18"},
-  {name:"Great India Place Mall",icon:"🏬",cat:"Mall",lat:28.5708,lng:77.3213,nearest:"Noida Sector 18"},
-  {name:"Sector 18 Noida Market",icon:"🛒",cat:"Market",lat:28.5708,lng:77.3213,nearest:"Noida Sector 18"},
-  {name:"Botanical Garden Noida",icon:"🌳",cat:"Park",lat:28.5619,lng:77.3385,nearest:"Botanical Garden"},
-  {name:"Gurudwara Bangla Sahib",icon:"🕌",cat:"Temple",lat:28.6268,lng:77.2094,nearest:"Patel Chowk"},
-  {name:"Jama Masjid",icon:"🕌",cat:"Heritage",lat:28.6507,lng:77.2360,nearest:"Jama Masjid"},
-  {name:"National Museum",icon:"🏛",cat:"Museum",lat:28.6116,lng:77.2199,nearest:"Udyog Bhawan"},
-  {name:"Pragati Maidan",icon:"🏗",cat:"Exhibition",lat:28.6189,lng:77.2541,nearest:"Indraprastha"},
-  {name:"Purana Qila",icon:"🏰",cat:"Heritage",lat:28.6106,lng:77.2421,nearest:"Supreme Court"},
-  {name:"Lodi Garden",icon:"🌳",cat:"Park",lat:28.5931,lng:77.2200,nearest:"Jor Bagh"},
-];
-
 // ── STATE ──────────────────────────────────────────────────
 let userLat = null, userLng = null;
 let selectedStationIdx = 0;
 let nearestStations = [];
 let destinations = [];
-let filteredDests = [...DESTINATIONS];
 
 // ── HELPERS ──────────────────────────────────────────────
 function dist(lat1,lng1,lat2,lng2) {
@@ -807,7 +784,7 @@ function fare(m) {
 }
 
 function lineClass(line) {
-  return 'line-'+line.toLowerCase();
+  return 'line-'+(line||'blue').toLowerCase();
 }
 
 function showToast(msg) {
@@ -818,8 +795,21 @@ function showToast(msg) {
 }
 
 function checkPlanBtn() {
-  const ok = userLat !== null && destinations.length > 0;
-  document.getElementById('planBtn').disabled = !ok;
+  document.getElementById('planBtn').disabled = !(userLat !== null && destinations.length > 0);
+}
+
+function findNearestStation(lat, lng) {
+  let best = null, bestD = Infinity;
+  STATIONS.forEach(s => {
+    const d = dist(lat, lng, s.lat, s.lng);
+    if (d < bestD) { bestD = d; best = {...s, d}; }
+  });
+  return best;
+}
+
+function lineColor(line) {
+  const map = {Yellow:'#f5c518',Blue:'#1a56f0',Red:'#f0341a',Green:'#16a34a',Violet:'#7c3aed',Orange:'#ea580c',Pink:'#db2777',Cyan:'#0891b2'};
+  return map[line] || '#888';
 }
 
 // ── LOCATION ──────────────────────────────────────────────
@@ -842,7 +832,6 @@ function detectLocation() {
     const sorted = STATIONS.map(s => ({...s, d: dist(userLat,userLng,s.lat,s.lng)}))
       .sort((a,b) => a.d-b.d);
 
-    // dedupe by name
     const seen = new Set();
     nearestStations = [];
     for (const s of sorted) {
@@ -856,7 +845,6 @@ function detectLocation() {
     document.getElementById('nearestDetail').textContent = fmtDist(top.d)+' away · '+top.line+' Line';
     document.getElementById('locResult').classList.add('show');
 
-    // render nearest items
     const container = document.getElementById('nearestItems');
     container.innerHTML = '';
     nearestStations.forEach((s, i) => {
@@ -881,7 +869,7 @@ function detectLocation() {
 
     userLat = top.lat; userLng = top.lng;
     checkPlanBtn();
-  }, err => {
+  }, () => {
     showToast('Location access denied. Please enable it.');
     btn.innerHTML = '<span class="btn-icon">📍</span> Try Again';
     btn.disabled = false;
@@ -890,63 +878,102 @@ function detectLocation() {
 
 function selectStation(i) {
   selectedStationIdx = i;
-  document.querySelectorAll('.nearest-item').forEach((el,j) => {
-    el.classList.toggle('selected', j===i);
-  });
+  document.querySelectorAll('.nearest-item').forEach((el,j) => el.classList.toggle('selected', j===i));
   userLat = nearestStations[i].lat;
   userLng = nearestStations[i].lng;
   checkPlanBtn();
 }
 
-// ── DESTINATION SEARCH ─────────────────────────────────────
-function searchDestinations() {
-  const q = document.getElementById('destSearch').value.toLowerCase().trim();
-  if (!q) {
-    filteredDests = [...DESTINATIONS];
-  } else {
-    filteredDests = DESTINATIONS.filter(d =>
-      d.name.toLowerCase().includes(q) ||
-      d.cat.toLowerCase().includes(q) ||
-      d.nearest.toLowerCase().includes(q)
-    );
-  }
-  renderDropdown();
-  document.getElementById('destDropdown').classList.add('show');
-}
+// ── DESTINATION SEARCH — NOMINATIM GEOCODING ─────────────
+let searchTimer = null;
+let geocodeResults = [];
 
-function showDropdown() {
-  filteredDests = [...DESTINATIONS];
-  renderDropdown();
-  document.getElementById('destDropdown').classList.add('show');
-}
-
-function renderDropdown() {
+function onSearchInput() {
+  const q = document.getElementById('destSearch').value.trim();
+  clearTimeout(searchTimer);
   const dd = document.getElementById('destDropdown');
-  const existing = destinations.map(d=>d.name);
-  const items = filteredDests.filter(d => !existing.includes(d.name));
-
-  if (items.length === 0) {
-    dd.innerHTML = '<div class="dropdown-empty">No results found</div>';
-    return;
-  }
-
-  dd.innerHTML = items.slice(0,12).map(d => `
-    <div class="dropdown-item" data-dest="${encodeURIComponent(d.name)}" onclick="addDestination(this)">
-      <div class="di-icon">${d.icon}</div>
-      <div>
-        <div class="di-name">${d.name}</div>
-        <div class="di-sub">${d.cat} · Near ${d.nearest}</div>
-      </div>
-    </div>
-  `).join('');
+  if (q.length < 3) { dd.classList.remove('show'); return; }
+  dd.innerHTML = '<div class="dropdown-empty">🔍 Searching…</div>';
+  dd.classList.add('show');
+  searchTimer = setTimeout(() => geocodeSearch(q), 400);
 }
 
-function addDestination(el) {
-  const name = decodeURIComponent(el.dataset.dest);
+function onSearchKey(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const q = document.getElementById('destSearch').value.trim();
+    if (q.length >= 3) geocodeSearch(q, true);
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('destDropdown').classList.remove('show');
+  }
+}
+
+async function geocodeSearch(q, forceFirst = false) {
+  const icon = document.getElementById('searchIconEl');
+  icon.textContent = '⏳';
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ' Delhi NCR India')}&format=json&limit=7&addressdetails=1`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const data = await res.json();
+    geocodeResults = data.filter(r => r.lat && r.lon);
+    icon.textContent = '🔍';
+    if (geocodeResults.length === 0) {
+      document.getElementById('destDropdown').innerHTML = '<div class="dropdown-empty">No places found — try a different name</div>';
+      document.getElementById('destDropdown').classList.add('show');
+      return;
+    }
+    if (forceFirst) { addGeoDestination(geocodeResults[0]); return; }
+    renderGeoDropdown(geocodeResults);
+  } catch {
+    icon.textContent = '🔍';
+    document.getElementById('destDropdown').innerHTML = '<div class="dropdown-empty">⚠️ Network error — check connection</div>';
+  }
+}
+
+function renderGeoDropdown(results) {
+  const dd = document.getElementById('destDropdown');
+  dd.innerHTML = results.map((r, i) => {
+    const name = r.display_name.split(',')[0];
+    const area = r.display_name.split(',').slice(1,3).join(',').trim();
+    return `<div class="dropdown-item" data-idx="${i}" onclick="addGeoDestination(geocodeResults[${i}])">
+      <div class="di-icon">${placeIcon(r)}</div>
+      <div>
+        <div class="di-name">${name}</div>
+        <div class="di-sub">${area}</div>
+      </div>
+    </div>`;
+  }).join('');
+  dd.classList.add('show');
+}
+
+function placeIcon(r) {
+  const t = ((r.type||'') + ' ' + (r.class||'')).toLowerCase();
+  if (t.includes('hospital') || t.includes('clinic'))                          return '🏥';
+  if (t.includes('school') || t.includes('university') || t.includes('college')) return '🎓';
+  if (t.includes('temple') || t.includes('mosque') || t.includes('church') || t.includes('place_of_worship')) return '🛕';
+  if (t.includes('mall') || t.includes('retail') || t.includes('shop'))        return '🛍';
+  if (t.includes('park') || t.includes('garden'))                               return '🌳';
+  if (t.includes('hotel'))                                                       return '🏨';
+  if (t.includes('restaurant') || t.includes('food'))                           return '🍽';
+  if (t.includes('station') || t.includes('metro') || t.includes('bus'))        return '🚉';
+  if (t.includes('airport'))                                                     return '✈️';
+  if (t.includes('residential') || t.includes('house'))                         return '🏠';
+  if (t.includes('office') || t.includes('commercial'))                         return '🏢';
+  return '📍';
+}
+
+function addGeoDestination(result) {
   if (destinations.length >= 6) { showToast('Max 6 destinations'); return; }
-  const d = DESTINATIONS.find(x => x.name === name);
-  if (!d || destinations.find(x=>x.name===name)) return;
-  destinations.push(d);
+  const name = result.display_name.split(',')[0];
+  const area = result.display_name.split(',').slice(1,3).join(',').trim();
+  const lat  = parseFloat(result.lat);
+  const lng  = parseFloat(result.lon);
+  if (destinations.find(d => d.name === name && Math.abs(d.lat - lat) < 0.0001)) {
+    showToast('Already added'); return;
+  }
+  const nearest = findNearestStation(lat, lng);
+  destinations.push({ name, area, lat, lng, icon: placeIcon(result), nearest: nearest.name, nearestLine: nearest.line, nearestDist: nearest.d });
   renderChips();
   document.getElementById('destSearch').value = '';
   document.getElementById('destDropdown').classList.remove('show');
@@ -955,9 +982,8 @@ function addDestination(el) {
   document.getElementById('step2-num').textContent = destinations.length;
 }
 
-function removeDestination(el) {
-  const name = decodeURIComponent(el.dataset.dest);
-  destinations = destinations.filter(d => d.name !== name);
+function removeDestination(idx) {
+  destinations.splice(idx, 1);
   renderChips();
   checkPlanBtn();
   if (destinations.length === 0) {
@@ -974,35 +1000,33 @@ function renderChips() {
     area.innerHTML = '<div class="chips-empty">No destinations added yet</div>';
     return;
   }
-  area.innerHTML = destinations.map(d => `
+  area.innerHTML = destinations.map((d, i) => `
     <div class="chip">
       ${d.icon} ${d.name}
-      <button class="chip-remove" data-dest="${encodeURIComponent(d.name)}" onclick="removeDestination(this)">×</button>
+      <span class="chip-near"> · <span class="ni-line-badge ${lineClass(d.nearestLine)} chip-line-badge">${d.nearestLine}</span> ${d.nearest}</span>
+      <button class="chip-remove" onclick="removeDestination(${i})">×</button>
     </div>
   `).join('');
 }
 
-// Close dropdown on outside click
 document.addEventListener('click', e => {
-  if (!e.target.closest('.search-wrap')) {
+  if (!e.target.closest('.search-wrap'))
     document.getElementById('destDropdown').classList.remove('show');
-  }
 });
 
 // ── ROUTE PLANNING ─────────────────────────────────────────
 function planTrip() {
   if (!userLat || destinations.length === 0) return;
 
-  // Nearest-neighbor ordering
   let remaining = [...destinations];
   let ordered = [];
   let curLat = userLat, curLng = userLng;
 
   while (remaining.length > 0) {
     let minD = Infinity, best = -1;
-    remaining.forEach((d,i) => {
-      const station = STATIONS.find(s => s.name === d.nearest) || {lat:d.lat,lng:d.lng};
-      const dd = dist(curLat, curLng, station.lat, station.lng);
+    remaining.forEach((d, i) => {
+      const s = STATIONS.find(st => st.name === d.nearest) || {lat:d.lat, lng:d.lng};
+      const dd = dist(curLat, curLng, s.lat, s.lng);
       if (dd < minD) { minD = dd; best = i; }
     });
     ordered.push(remaining[best]);
@@ -1011,21 +1035,24 @@ function planTrip() {
     remaining.splice(best, 1);
   }
 
-  // Build route cards
   let totalFare = 0, totalTime = 0;
   const boardStation = nearestStations[selectedStationIdx];
   let prevStation = boardStation;
 
   const cards = ordered.map((dest, i) => {
-    const alightStation = STATIONS.find(s => s.name === dest.nearest) || {name: dest.nearest, line: 'Blue', lat: dest.lat, lng: dest.lng};
-    const d = dist(prevStation.lat, prevStation.lng, alightStation.lat, alightStation.lng);
-    const f = fare(d);
-    const mins = Math.max(5, Math.round(d/400));
+    const alightStation = STATIONS.find(s => s.name === dest.nearest) || {name: dest.nearest, line: dest.nearestLine||'Blue', lat: dest.lat, lng: dest.lng};
+    const d    = dist(prevStation.lat, prevStation.lng, alightStation.lat, alightStation.lng);
+    const f    = fare(d);
+    const mins = Math.max(5, Math.round(d / 400));
     totalFare += f;
     totalTime += mins;
 
-    const boardName = i === 0 ? boardStation.name : (STATIONS.find(s => s.name === ordered[i-1].nearest) || {name: ordered[i-1].nearest}).name;
-    const boardLine = i === 0 ? boardStation.line : (STATIONS.find(s => s.name === ordered[i-1].nearest) || {line:'Blue'}).line;
+    const boardLine = i === 0
+      ? boardStation.line
+      : (STATIONS.find(s => s.name === ordered[i-1].nearest) || {line:'Blue'}).line;
+    const boardName = i === 0
+      ? boardStation.name
+      : (STATIONS.find(s => s.name === ordered[i-1].nearest) || {name: ordered[i-1].nearest}).name;
 
     prevStation = alightStation;
 
@@ -1033,6 +1060,7 @@ function planTrip() {
       <div class="route-card" style="animation-delay:${i*0.08}s">
         <div class="route-stop-num">${i+1}</div>
         <div class="route-dest">${dest.icon} ${dest.name}</div>
+        ${dest.area ? `<div style="font-size:11px;color:var(--muted);margin-bottom:10px">${dest.area}</div>` : ''}
         <div class="route-journey">
           <div class="rj-station">
             <div class="st-dot" style="background:${lineColor(boardLine)}"></div>
@@ -1048,14 +1076,14 @@ function planTrip() {
           <span class="fare-badge">₹ ${f}</span>
           <span class="time-badge">⏱ ~${mins} min</span>
           <span class="ni-line-badge ${lineClass(alightStation.line||'Blue')} line-badge-sm">${alightStation.line||'Blue'} Line</span>
+          ${dest.nearestDist ? `<span style="font-size:11px;color:var(--muted)">· ${fmtDist(dest.nearestDist)} walk</span>` : ''}
         </div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 
   document.getElementById('r-stops').textContent = ordered.length;
-  document.getElementById('r-fare').textContent = '₹'+totalFare;
-  document.getElementById('r-time').textContent = totalTime+'m';
+  document.getElementById('r-fare').textContent  = '₹' + totalFare;
+  document.getElementById('r-time').textContent  = totalTime + 'm';
   document.getElementById('routeCards').innerHTML = cards;
 
   const results = document.getElementById('results');
@@ -1063,11 +1091,7 @@ function planTrip() {
   setTimeout(() => results.scrollIntoView({behavior:'smooth', block:'start'}), 100);
 }
 
-function lineColor(line) {
-  const map = {Yellow:'#f5c518',Blue:'#1a56f0',Red:'#f0341a',Green:'#16a34a',Violet:'#7c3aed',Orange:'#ea580c',Pink:'#db2777',Cyan:'#0891b2'};
-  return map[line] || '#888';
-}
-
+// ── RESET ──────────────────────────────────────────────────
 function resetAll() {
   userLat = null; userLng = null;
   destinations = [];
@@ -1083,6 +1107,7 @@ function resetAll() {
   document.getElementById('step2-num').classList.remove('done');
   document.getElementById('step2-num').textContent = '2';
   document.getElementById('card-loc').classList.remove('active');
+  document.getElementById('destSearch').value = '';
   renderChips();
   document.getElementById('results').classList.remove('show');
   checkPlanBtn();
