@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Delhi Metro Travel Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --metro-blue: #0057B8;
+    --metro-blue-dark: #003d85;
+    --metro-blue-light: #e8f0fb;
+    --bg: #f0f4f9;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --error: #dc2626;
+    --error-bg: #fef2f2;
+    --radius: 18px;
+    --radius-sm: 11px;
+    --shadow: 0 2px 14px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.13);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 52px;
+  }
+
+  /* ── Header ── */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: linear-gradient(135deg, var(--metro-blue) 0%, #0041a8 100%);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 3px 16px rgba(0,65,168,0.35);
+  }
+  .logo-mark {
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--metro-blue);
+    flex-shrink: 0;
+    letter-spacing: -0.5px;
+  }
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .header-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.72);
+    font-weight: 400;
+  }
+
+  /* ── Container ── */
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.4s ease both;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .step-badge {
+    width: 24px;
+    height: 24px;
+    background: var(--metro-blue);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+  }
+  .btn-primary {
+    background: var(--metro-blue);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--metro-blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba(0,87,184,0.38);
+  }
+  .btn-primary:active:not(:disabled) { transform: translateY(0); }
+  .btn-danger {
+    background: #fff3f3;
+    color: var(--error);
+    border: 1.5px solid #fecaca;
+  }
+  .btn-danger:hover { background: #fee2e2; }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  /* ── Status boxes ── */
+  .status-detecting {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    background: var(--metro-blue-light);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--metro-blue);
+    font-weight: 500;
+    margin-top: 12px;
+  }
+  .status-success {
+    padding: 14px;
+    background: var(--success-bg);
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--success);
+    margin-top: 12px;
+    animation: fadeInUp 0.3s ease both;
+  }
+  .found-label {
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .found-station {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--success);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: pulseGlow 2s infinite;
+  }
+  .status-error {
+    padding: 14px;
+    background: var(--error-bg);
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--error);
+    font-size: 14px;
+    color: var(--error);
+    font-weight: 500;
+    margin-top: 12px;
+  }
+
+  /* ── Nearby stations ── */
+  .nearby-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin: 14px 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .nearby-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 13px;
+    background: var(--bg);
+    border-radius: 9px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .nearby-name {
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  .nearby-dist { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+  /* ── Area selector ── */
+  .area-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 14px 0 8px;
+    font-weight: 500;
+  }
+  .area-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .area-btn {
+    padding: 11px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: var(--text);
+    text-align: center;
+  }
+  .area-btn:hover, .area-btn.active {
+    border-color: var(--metro-blue);
+    background: var(--metro-blue-light);
+    color: var(--metro-blue);
+  }
+
+  /* ── Destination search ── */
+  .search-wrapper { position: relative; }
+  .search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .search-input:focus { border-color: var(--metro-blue); background: #fff; }
+  .search-input::placeholder { color: #adb5bd; }
+
+  /* ── Dropdown ── */
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0; right: 0;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    max-height: 290px;
+    overflow-y: auto;
+    z-index: 60;
+    display: none;
+  }
+  .dropdown.show { display: block; animation: fadeInUp 0.18s ease; }
+  .dropdown-item {
+    padding: 11px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.13s;
+  }
+  .dropdown-item:last-child { border-bottom: none; }
+  .dropdown-item:hover { background: var(--metro-blue-light); }
+  .dest-icon { font-size: 18px; flex-shrink: 0; }
+  .dest-name { font-weight: 600; line-height: 1.2; }
+  .dest-metro { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .dropdown-empty {
+    padding: 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* ── Chips ── */
+  .chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    min-height: 22px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px 6px 12px;
+    background: var(--metro-blue-light);
+    border: 1.5px solid rgba(0,87,184,0.2);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--metro-blue);
+    animation: fadeInUp 0.22s ease both;
+  }
+  .chip-remove {
+    width: 17px;
+    height: 17px;
+    background: var(--metro-blue);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .chip-remove:hover { background: var(--metro-blue-dark); }
+  .chips-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .chips-count {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  /* ── Plan button card ── */
+  .plan-card { padding: 16px; }
+  .btn-plan {
+    font-size: 16px;
+    padding: 16px;
+    border-radius: 13px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── Summary card ── */
+  .summary-card {
+    background: linear-gradient(135deg, var(--metro-blue) 0%, #0041a8 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-lg);
+    animation: fadeInUp 0.4s ease both;
+  }
+  .summary-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .summary-sub {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-bottom: 14px;
+  }
+  .summary-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .stat-item {
+    padding: 12px 8px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.18);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .stat-label {
+    font-size: 10px;
+    opacity: 0.78;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Journey cards ── */
+  .route-origin {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    background: var(--card);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.35s ease both;
+  }
+  .journey-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--metro-blue);
+    animation: fadeInUp 0.4s ease both;
+  }
+  .j-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 13px;
+    gap: 8px;
+  }
+  .j-stop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .stop-num {
+    width: 34px;
+    height: 34px;
+    background: var(--metro-blue);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .stop-dest {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.25;
+  }
+  .j-fare { text-align: right; flex-shrink: 0; }
+  .fare-amt {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--metro-blue);
+    line-height: 1;
+  }
+  .fare-lbl { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  .j-route {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .route-lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .station-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .route-arrow { color: var(--text-muted); font-size: 13px; flex-shrink: 0; }
+
+  .j-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .line-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    background: var(--bg);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* Line color variants */
+  .lb-yellow { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+  .lb-blue   { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .lb-red    { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+  .lb-green  { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+  .lb-violet { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+  .lb-orange { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+
+  .jc-yellow { border-left-color: #d97706; }
+  .jc-blue   { border-left-color: #1d4ed8; }
+  .jc-red    { border-left-color: #dc2626; }
+  .jc-green  { border-left-color: #16a34a; }
+  .jc-violet { border-left-color: #7c3aed; }
+  .jc-orange { border-left-color: #ea580c; }
+
+  /* ── Total card ── */
+  .total-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    border: 2px dashed var(--border);
+    box-shadow: none;
+    animation: fadeInUp 0.4s ease 0.35s both;
+    margin-top: 4px;
+  }
+  .total-lbl { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+  .total-amt {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--metro-blue);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .total-note { font-size: 11px; color: var(--text-muted); }
+
+  /* ── Spinner ── */
+  .spinner {
+    width: 20px; height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+    flex-shrink: 0;
+  }
+  .spinner-blue {
+    border-color: rgba(0,87,184,0.2);
+    border-top-color: var(--metro-blue);
+  }
+
+  .hidden { display: none !important; }
+
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulseGlow {
+    0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.55); }
+    65%  { box-shadow: 0 0 0 8px rgba(22,163,74,0); }
+    100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ Header ══ -->
+<header class="header">
+  <div class="logo-mark">DM</div>
+  <div>
+    <div class="header-title">Delhi Metro Planner</div>
+    <div class="header-sub">Plan your metro journey</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ── Step 1: Location ── -->
+  <div class="card" id="location-card">
+    <div class="card-title">
+      <span class="step-badge">1</span> Your Location
+    </div>
+    <button class="btn btn-primary" id="detect-btn" onclick="detectLocation()">
+      📍 Detect My Location
+    </button>
+    <div id="loc-status"></div>
+    <div id="nearby-wrap"></div>
+    <div id="area-wrap"></div>
+  </div>
+
+  <!-- ── Step 2: Destinations ── -->
+  <div class="card" id="dest-card">
+    <div class="card-title">
+      <span class="step-badge">2</span> Add Destinations
+      <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:auto;">up to 6</span>
+    </div>
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        class="search-input"
+        id="dest-input"
+        type="text"
+        placeholder="Search a destination..."
+        autocomplete="off"
+        oninput="filterDests(this.value)"
+        onfocus="openDropdown()"
+      />
+      <div class="dropdown" id="dest-dd"></div>
+    </div>
+    <div class="chips-wrap" id="chips-wrap">
+      <span class="chips-hint">No destinations added yet</span>
+    </div>
+    <div class="chips-count" id="chips-count"></div>
+  </div>
+
+  <!-- ── Step 3: Plan ── -->
+  <div class="card plan-card">
+    <button class="btn btn-primary btn-plan" id="plan-btn" onclick="planTrip()">
+      🗺️ Plan My Trip
+    </button>
+  </div>
+
+  <!-- ── Results ── -->
+  <div id="results" class="hidden"></div>
+
+  <!-- ── Reset ── -->
+  <div id="reset-wrap" class="hidden" style="margin-top:8px;">
+    <button class="btn btn-danger" onclick="resetAll()">🔄 Reset &amp; Start Over</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+
+const STATIONS = [
+  // Yellow Line (Line 2)
+  { name:'Samaypur Badli',          line:'Yellow', lat:28.7474, lng:77.1313 },
+  { name:'Rohini Sector 18',        line:'Yellow', lat:28.7381, lng:77.1258 },
+  { name:'Haiderpur Badli Mor',     line:'Yellow', lat:28.7303, lng:77.1283 },
+  { name:'Jahangirpuri',            line:'Yellow', lat:28.7252, lng:77.1364 },
+  { name:'Adarsh Nagar',            line:'Yellow', lat:28.7175, lng:77.1502 },
+  { name:'Azadpur',                 line:'Yellow', lat:28.7089, lng:77.1706 },
+  { name:'Model Town',              line:'Yellow', lat:28.7029, lng:77.1896 },
+  { name:'GTB Nagar',               line:'Yellow', lat:28.6970, lng:77.2022 },
+  { name:'Vishwavidyalaya',         line:'Yellow', lat:28.6916, lng:77.2113 },
+  { name:'Vidhan Sabha',            line:'Yellow', lat:28.6840, lng:77.2189 },
+  { name:'Civil Lines',             line:'Yellow', lat:28.6778, lng:77.2228 },
+  { name:'Kashmere Gate',           line:'Yellow', lat:28.6671, lng:77.2286 },
+  { name:'Chandni Chowk',           line:'Yellow', lat:28.6570, lng:77.2300 },
+  { name:'Chawri Bazar',            line:'Yellow', lat:28.6497, lng:77.2286 },
+  { name:'New Delhi',               line:'Yellow', lat:28.6430, lng:77.2193 },
+  { name:'Rajiv Chowk',             line:'Yellow', lat:28.6329, lng:77.2197 },
+  { name:'Patel Chowk',             line:'Yellow', lat:28.6258, lng:77.2134 },
+  { name:'Central Secretariat',     line:'Yellow', lat:28.6153, lng:77.2110 },
+  { name:'Udyog Bhawan',            line:'Yellow', lat:28.6103, lng:77.2097 },
+  { name:'Lok Kalyan Marg',         line:'Yellow', lat:28.5992, lng:77.2062 },
+  { name:'Jor Bagh',                line:'Yellow', lat:28.5900, lng:77.2097 },
+  { name:'INA',                     line:'Yellow', lat:28.5758, lng:77.2089 },
+  { name:'AIIMS',                   line:'Yellow', lat:28.5680, lng:77.2061 },
+  { name:'Green Park',              line:'Yellow', lat:28.5593, lng:77.2042 },
+  { name:'Hauz Khas',               line:'Yellow', lat:28.5436, lng:77.2061 },
+  { name:'Malviya Nagar',           line:'Yellow', lat:28.5319, lng:77.2086 },
+  { name:'Saket',                   line:'Yellow', lat:28.5217, lng:77.2139 },
+  { name:'Qutab Minar',             line:'Yellow', lat:28.5024, lng:77.1849 },
+  { name:'Chhattarpur',             line:'Yellow', lat:28.4956, lng:77.1672 },
+  { name:'Sultanpur',               line:'Yellow', lat:28.4886, lng:77.1515 },
+  { name:'Ghitorni',                line:'Yellow', lat:28.4768, lng:77.1378 },
+  { name:'Arjan Garh',              line:'Yellow', lat:28.4580, lng:77.1108 },
+  { name:'Guru Dronacharya',        line:'Yellow', lat:28.4614, lng:77.0906 },
+  { name:'Sikanderpur',             line:'Yellow', lat:28.4740, lng:77.0802 },
+  { name:'MG Road',                 line:'Yellow', lat:28.4800, lng:77.0741 },
+  { name:'IFFCO Chowk',             line:'Yellow', lat:28.4736, lng:77.0697 },
+  { name:'Huda City Centre',        line:'Yellow', lat:28.4595, lng:77.0725 },
+
+  // Blue Line (Line 3/4)
+  { name:'Dwarka Sector 21',        line:'Blue',   lat:28.5520, lng:77.0588 },
+  { name:'Dwarka Sector 8',         line:'Blue',   lat:28.5602, lng:77.0672 },
+  { name:'Dwarka Sector 9',         line:'Blue',   lat:28.5659, lng:77.0723 },
+  { name:'Dwarka Sector 10',        line:'Blue',   lat:28.5735, lng:77.0737 },
+  { name:'Dwarka Sector 11',        line:'Blue',   lat:28.5790, lng:77.0784 },
+  { name:'Dwarka Sector 12',        line:'Blue',   lat:28.5837, lng:77.0838 },
+  { name:'Dwarka Sector 13',        line:'Blue',   lat:28.5898, lng:77.0887 },
+  { name:'Dwarka Sector 14',        line:'Blue',   lat:28.5937, lng:77.0967 },
+  { name:'Dwarka',                  line:'Blue',   lat:28.5917, lng:77.0596 },
+  { name:'Dwarka Mor',              line:'Blue',   lat:28.6015, lng:77.0630 },
+  { name:'Uttam Nagar West',        line:'Blue',   lat:28.6208, lng:77.0572 },
+  { name:'Uttam Nagar East',        line:'Blue',   lat:28.6221, lng:77.0677 },
+  { name:'Janakpuri West',          line:'Blue',   lat:28.6298, lng:77.0738 },
+  { name:'Janakpuri East',          line:'Blue',   lat:28.6296, lng:77.0840 },
+  { name:'Tilak Nagar',             line:'Blue',   lat:28.6340, lng:77.0945 },
+  { name:'Subhash Nagar',           line:'Blue',   lat:28.6332, lng:77.1035 },
+  { name:'Tagore Garden',           line:'Blue',   lat:28.6334, lng:77.1127 },
+  { name:'Rajouri Garden',          line:'Blue',   lat:28.6410, lng:77.1224 },
+  { name:'Ramesh Nagar',            line:'Blue',   lat:28.6490, lng:77.1313 },
+  { name:'Moti Nagar',              line:'Blue',   lat:28.6558, lng:77.1422 },
+  { name:'Kirti Nagar',             line:'Blue',   lat:28.6561, lng:77.1510 },
+  { name:'Shadipur',                line:'Blue',   lat:28.6503, lng:77.1600 },
+  { name:'Patel Nagar',             line:'Blue',   lat:28.6527, lng:77.1697 },
+  { name:'Rajendra Place',          line:'Blue',   lat:28.6570, lng:77.1791 },
+  { name:'Karol Bagh',              line:'Blue',   lat:28.6513, lng:77.1905 },
+  { name:'Jhandewalan',             line:'Blue',   lat:28.6476, lng:77.2009 },
+  { name:'Ramakrishna Ashram Marg', line:'Blue',   lat:28.6406, lng:77.2088 },
+  { name:'Barakhamba Road',         line:'Blue',   lat:28.6313, lng:77.2295 },
+  { name:'Mandi House',             line:'Blue',   lat:28.6265, lng:77.2355 },
+  { name:'Supreme Court',           line:'Blue',   lat:28.6239, lng:77.2430 },
+  { name:'Indraprastha',            line:'Blue',   lat:28.6178, lng:77.2491 },
+  { name:'Yamuna Bank',             line:'Blue',   lat:28.6206, lng:77.2598 },
+  { name:'Akshardham',              line:'Blue',   lat:28.6214, lng:77.2759 },
+  { name:'Mayur Vihar Phase 1',     line:'Blue',   lat:28.6083, lng:77.2945 },
+  { name:'Noida Sector 15',         line:'Blue',   lat:28.5848, lng:77.3302 },
+  { name:'Noida Sector 16',         line:'Blue',   lat:28.5819, lng:77.3376 },
+  { name:'Noida Sector 18',         line:'Blue',   lat:28.5703, lng:77.3362 },
+  { name:'Botanical Garden',        line:'Blue',   lat:28.5609, lng:77.3346 },
+  { name:'Noida City Centre',       line:'Blue',   lat:28.5733, lng:77.3515 },
+  { name:'Golf Course',             line:'Blue',   lat:28.5817, lng:77.3597 },
+  { name:'Noida Sector 34',         line:'Blue',   lat:28.5882, lng:77.3670 },
+  { name:'Noida Sector 52',         line:'Blue',   lat:28.6136, lng:77.3718 },
+  { name:'Noida Sector 61',         line:'Blue',   lat:28.6225, lng:77.3779 },
+  { name:'Noida Sector 59',         line:'Blue',   lat:28.6309, lng:77.3806 },
+  { name:'Noida Sector 62',         line:'Blue',   lat:28.6289, lng:77.3906 },
+  { name:'Noida Electronic City',   line:'Blue',   lat:28.6227, lng:77.4001 },
+
+  // Red Line (Line 1)
+  { name:'Rithala',                 line:'Red',    lat:28.7197, lng:77.1078 },
+  { name:'Rohini West',             line:'Red',    lat:28.7139, lng:77.1135 },
+  { name:'Rohini East',             line:'Red',    lat:28.7131, lng:77.1263 },
+  { name:'Pitam Pura',              line:'Red',    lat:28.7043, lng:77.1310 },
+  { name:'Kohat Enclave',           line:'Red',    lat:28.6986, lng:77.1361 },
+  { name:'Netaji Subhash Place',    line:'Red',    lat:28.6934, lng:77.1508 },
+  { name:'Keshav Puram',            line:'Red',    lat:28.6868, lng:77.1612 },
+  { name:'Kanhaiya Nagar',          line:'Red',    lat:28.6818, lng:77.1731 },
+  { name:'Inderlok',                line:'Red',    lat:28.6741, lng:77.1843 },
+  { name:'Shastri Nagar',           line:'Red',    lat:28.6694, lng:77.1960 },
+  { name:'Pratap Nagar',            line:'Red',    lat:28.6679, lng:77.2073 },
+  { name:'Pulbangash',              line:'Red',    lat:28.6657, lng:77.2171 },
+  { name:'Tis Hazari',              line:'Red',    lat:28.6656, lng:77.2275 },
+  { name:'Shastri Park',            line:'Red',    lat:28.6734, lng:77.2467 },
+  { name:'Seelampur',               line:'Red',    lat:28.6740, lng:77.2620 },
+  { name:'Welcome',                 line:'Red',    lat:28.6773, lng:77.2756 },
+  { name:'Shahdara',                line:'Red',    lat:28.6764, lng:77.2895 },
+  { name:'Mansarovar Park',         line:'Red',    lat:28.6805, lng:77.3024 },
+  { name:'Jhilmil',                 line:'Red',    lat:28.6786, lng:77.3134 },
+  { name:'Dilshad Garden',          line:'Red',    lat:28.6817, lng:77.3213 },
+];
+
+// Kashmere Gate and Rajiv Chowk exist on multiple lines — add interchange entries
+// (kept separate so nearest-station search can find them from any direction)
+STATIONS.push({ name:'Kashmere Gate', line:'Red',  lat:28.6671, lng:77.2286 });
+STATIONS.push({ name:'Rajiv Chowk',   line:'Blue', lat:28.6329, lng:77.2197 });
+
+// Deduplicated list (first occurrence per name) for display
+const UNIQUE_STATIONS = STATIONS.filter((s, i, a) => a.findIndex(x => x.name === s.name) === i);
+
+const DESTINATIONS = {
+  'Qutub Minar':          { lat:28.5244, lng:77.1855, icon:'🕌', nearest:'Qutab Minar' },
+  'India Gate':           { lat:28.6129, lng:77.2295, icon:'🏛️', nearest:'Central Secretariat' },
+  'Red Fort':             { lat:28.6562, lng:77.2410, icon:'🏯', nearest:'Chandni Chowk' },
+  'Akshardham Temple':    { lat:28.6127, lng:77.2773, icon:'🛕', nearest:'Akshardham' },
+  'Lotus Temple':         { lat:28.5535, lng:77.2588, icon:'🌸', nearest:'Hauz Khas' },
+  "Humayun's Tomb":       { lat:28.5936, lng:77.2507, icon:'🕌', nearest:'Indraprastha' },
+  'Connaught Place':      { lat:28.6289, lng:77.2089, icon:'🏢', nearest:'Rajiv Chowk' },
+  'Chandni Chowk':        { lat:28.6562, lng:77.2310, icon:'🛍️', nearest:'Chandni Chowk' },
+  'Lajpat Nagar Market':  { lat:28.5672, lng:77.2434, icon:'🛒', nearest:'INA' },
+  'Saket Mall':           { lat:28.5213, lng:77.2138, icon:'🏬', nearest:'Saket' },
+  'DLF Cyber City':       { lat:28.4943, lng:77.0890, icon:'💻', nearest:'Sikanderpur' },
+  'Omaxe Mall':           { lat:28.7168, lng:77.1002, icon:'🏬', nearest:'Rithala' },
+  'Hauz Khas Village':    { lat:28.5491, lng:77.2005, icon:'🎨', nearest:'Hauz Khas' },
+  'Dilli Haat INA':       { lat:28.5768, lng:77.2112, icon:'🎪', nearest:'INA' },
+  'IGI Airport':          { lat:28.5562, lng:77.1000, icon:'✈️', nearest:'Dwarka Sector 21' },
+  'AIIMS Delhi':          { lat:28.5672, lng:77.2100, icon:'🏥', nearest:'AIIMS' },
+  'JNU':                  { lat:28.5403, lng:77.1674, icon:'🎓', nearest:'Hauz Khas' },
+  'IIT Delhi':            { lat:28.5459, lng:77.1926, icon:'🎓', nearest:'Hauz Khas' },
+  'Rajghat':              { lat:28.6557, lng:77.2497, icon:'🕊️', nearest:'Chandni Chowk' },
+  'Jantar Mantar':        { lat:28.6270, lng:77.2167, icon:'🔭', nearest:'Rajiv Chowk' },
+};
+
+const AREAS = {
+  'North Delhi':  { lat:28.7041, lng:77.1025 },
+  'South Delhi':  { lat:28.5245, lng:77.1855 },
+  'East Delhi':   { lat:28.6692, lng:77.2942 },
+  'West Delhi':   { lat:28.6460, lng:77.0939 },
+  'Noida':        { lat:28.5355, lng:77.3910 },
+  'Gurgaon':      { lat:28.4595, lng:77.0266 },
+};
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let userLoc       = null;   // { lat, lng }
+let selectedDests = [];
+
+// ═══════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════
+
+function haversine(la1, lo1, la2, lo2) {
+  const R = 6371000;
+  const f1 = la1*Math.PI/180, f2 = la2*Math.PI/180;
+  const df = (la2-la1)*Math.PI/180, dl = (lo2-lo1)*Math.PI/180;
+  const a = Math.sin(df/2)**2 + Math.cos(f1)*Math.cos(f2)*Math.sin(dl/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function fmtDist(m) {
+  return m < 1000 ? `${Math.round(m)} m` : `${(m/1000).toFixed(1)} km`;
+}
+
+function getNearby(lat, lng, n = 3) {
+  return UNIQUE_STATIONS
+    .map(s => ({ ...s, dist: haversine(lat, lng, s.lat, s.lng) }))
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, n);
+}
+
+function getNearestStation(lat, lng) {
+  return getNearby(lat, lng, 1)[0];
+}
+
+function getFare(meters) {
+  const k = meters / 1000;
+  if (k <= 2)  return 10;
+  if (k <= 5)  return 20;
+  if (k <= 12) return 30;
+  if (k <= 21) return 40;
+  if (k <= 32) return 50;
+  return 60;
+}
+
+function approxStops(s1, s2) {
+  return Math.max(1, Math.round(haversine(s1.lat, s1.lng, s2.lat, s2.lng) / 1200));
+}
+
+function lineCss(line) {
+  return { Yellow:'lb-yellow', Blue:'lb-blue', Red:'lb-red', Green:'lb-green', Violet:'lb-violet', Orange:'lb-orange' }[line] || 'lb-blue';
+}
+function cardCss(line) {
+  return { Yellow:'jc-yellow', Blue:'jc-blue', Red:'jc-red', Green:'jc-green', Violet:'jc-violet', Orange:'jc-orange' }[line] || 'jc-blue';
+}
+function lineEmoji(line) {
+  return { Yellow:'🟡', Blue:'🔵', Red:'🔴', Green:'🟢', Violet:'🟣', Orange:'🟠' }[line] || '🔵';
+}
+
+// ═══════════════════════════════════════════
+//  FEATURE 1 — LOCATION
+// ═══════════════════════════════════════════
+
+function detectLocation() {
+  const btn = document.getElementById('detect-btn');
+  btn.disabled = true;
+
+  document.getElementById('loc-status').innerHTML = `
+    <div class="status-detecting">
+      <div class="spinner spinner-blue"></div> Detecting your location…
+    </div>`;
+  document.getElementById('nearby-wrap').innerHTML = '';
+  document.getElementById('area-wrap').innerHTML = '';
+
+  if (!navigator.geolocation) {
+    showLocError('Geolocation not supported by your browser.', btn);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => onGotLoc(pos.coords.latitude, pos.coords.longitude, btn),
+    err => {
+      const msgs = { 1:'Location permission denied.', 2:'Location unavailable.', 3:'Request timed out.' };
+      showLocError(msgs[err.code] || 'Could not get location.', btn);
+    },
+    { timeout: 10000, maximumAge: 0 }
+  );
+}
+
+function onGotLoc(lat, lng, btn) {
+  userLoc = { lat, lng };
+  btn.disabled = false;
+  const nearest = getNearestStation(lat, lng);
+  const nearby  = getNearby(lat, lng, 3);
+  renderLocSuccess(`📍 Location detected`, nearest, nearby);
+}
+
+function showLocError(msg, btn) {
+  if (btn) btn.disabled = false;
+  document.getElementById('loc-status').innerHTML = `
+    <div class="status-error">⚠️ ${msg} Please select your area below.</div>`;
+  renderAreaSelector();
+}
+
+function renderLocSuccess(label, nearest, nearby) {
+  document.getElementById('loc-status').innerHTML = `
+    <div class="status-success">
+      <div class="found-label">${label}</div>
+      <div class="found-station">
+        <span class="pulse-dot"></span>${nearest.name}
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:5px;">
+        ${fmtDist(nearest.dist || 0)} away · ${nearest.line} Line
+      </div>
+    </div>`;
+
+  document.getElementById('nearby-wrap').innerHTML = `
+    <div class="nearby-label">3 Nearest Stations</div>
+    ${nearby.map(s => `
+      <div class="nearby-item">
+        <div class="nearby-name">
+          <span class="line-badge ${lineCss(s.line)}" style="padding:2px 7px;font-size:10px;">${s.line}</span>
+          ${s.name}
+        </div>
+        <div class="nearby-dist">${fmtDist(s.dist)}</div>
+      </div>`).join('')}`;
+}
+
+function renderAreaSelector() {
+  document.getElementById('area-wrap').innerHTML = `
+    <div class="area-label">Choose your area:</div>
+    <div class="area-grid">
+      ${Object.entries(AREAS).map(([name]) => `
+        <button class="area-btn" data-area="${name}" onclick="selectArea(this)">${name}</button>
+      `).join('')}
+    </div>`;
+}
+
+function selectArea(el) {
+  document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const name = el.dataset.area;
+  const { lat, lng } = AREAS[name];
+  userLoc = { lat, lng };
+  const nearest = getNearestStation(lat, lng);
+  const nearby  = getNearby(lat, lng, 3);
+  document.getElementById('loc-status').innerHTML = '';
+  renderLocSuccess(`📍 Area: ${name}`, nearest, nearby);
+}
+
+// ═══════════════════════════════════════════
+//  FEATURE 2 — DESTINATIONS
+// ═══════════════════════════════════════════
+
+function openDropdown() {
+  renderDD(Object.keys(DESTINATIONS).filter(d => !selectedDests.includes(d)));
+  document.getElementById('dest-dd').classList.add('show');
+}
+
+function filterDests(val) {
+  const q = val.toLowerCase().trim();
+  const matches = Object.keys(DESTINATIONS).filter(d =>
+    d.toLowerCase().includes(q) && !selectedDests.includes(d)
+  );
+  renderDD(matches);
+  document.getElementById('dest-dd').classList.add('show');
+}
+
+function renderDD(list) {
+  const dd = document.getElementById('dest-dd');
+  if (!list.length) {
+    dd.innerHTML = `<div class="dropdown-empty">No more destinations to add</div>`;
+    return;
+  }
+  dd.innerHTML = list.map(d => `
+    <div class="dropdown-item" data-dest="${encodeURIComponent(d)}" onclick="addDest(this)">
+      <span class="dest-icon">${DESTINATIONS[d].icon}</span>
+      <div>
+        <div class="dest-name">${d}</div>
+        <div class="dest-metro">🚇 ${DESTINATIONS[d].nearest}</div>
+      </div>
+    </div>`).join('');
+}
+
+function addDest(el) {
+  const name = decodeURIComponent(el.dataset.dest);
+  if (selectedDests.includes(name) || selectedDests.length >= 6) return;
+  selectedDests.push(name);
+  document.getElementById('dest-input').value = '';
+  document.getElementById('dest-dd').classList.remove('show');
+  renderChips();
+}
+
+function removeDest(el) {
+  const name = decodeURIComponent(el.dataset.dest);
+  selectedDests = selectedDests.filter(d => d !== name);
+  renderChips();
+}
+
+function renderChips() {
+  const wrap  = document.getElementById('chips-wrap');
+  const count = document.getElementById('chips-count');
+  if (!selectedDests.length) {
+    wrap.innerHTML  = `<span class="chips-hint">No destinations added yet</span>`;
+    count.textContent = '';
+    return;
+  }
+  wrap.innerHTML = selectedDests.map(d => `
+    <div class="chip">
+      <span>${DESTINATIONS[d].icon} ${d}</span>
+      <button class="chip-remove" data-dest="${encodeURIComponent(d)}" onclick="removeDest(this)">✕</button>
+    </div>`).join('');
+  count.textContent = `${selectedDests.length}/6 destinations added`;
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrapper'))
+    document.getElementById('dest-dd').classList.remove('show');
+});
+
+// ═══════════════════════════════════════════
+//  FEATURE 3 — ROUTE PLANNING
+// ═══════════════════════════════════════════
+
+function nearestNeighbor(startLat, startLng, dests) {
+  const pool = dests.map(name => {
+    const d = DESTINATIONS[name];
+    return { name, icon: d.icon, lat: d.lat, lng: d.lng, station: getNearestStation(d.lat, d.lng) };
+  });
+  const order = [];
+  let cLat = startLat, cLng = startLng;
+  while (pool.length) {
+    let best = 0, bestDist = Infinity;
+    pool.forEach((d, i) => {
+      const dist = haversine(cLat, cLng, d.lat, d.lng);
+      if (dist < bestDist) { bestDist = dist; best = i; }
+    });
+    const pick = pool.splice(best, 1)[0];
+    order.push(pick);
+    cLat = pick.lat; cLng = pick.lng;
+  }
+  return order;
+}
+
+function planTrip() {
+  if (!userLoc) {
+    alert('Please detect your location first (Step 1).');
+    return;
+  }
+  if (!selectedDests.length) {
+    alert('Please add at least one destination (Step 2).');
+    return;
+  }
+  const btn = document.getElementById('plan-btn');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> Planning route…`;
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '🗺️ Plan My Trip';
+    buildResults();
+  }, 700);
+}
+
+function buildResults() {
+  const boardingSt  = getNearestStation(userLoc.lat, userLoc.lng);
+  const orderedDests = nearestNeighbor(userLoc.lat, userLoc.lng, selectedDests);
+
+  let totalFare = 0, totalStops = 0;
+  let prevSt = boardingSt;
+
+  const cards = orderedDests.map((dest, i) => {
+    const alightSt = dest.station;
+    const distM    = haversine(prevSt.lat, prevSt.lng, alightSt.lat, alightSt.lng);
+    const fare     = getFare(distM);
+    const stops    = approxStops(prevSt, alightSt);
+    const mins     = stops * 3;
+    const line     = prevSt.line;
+
+    totalFare  += fare;
+    totalStops += stops;
+
+    const html = `
+      <div class="journey-card ${cardCss(line)}" style="animation-delay:${i*0.06}s">
+        <div class="j-header">
+          <div class="j-stop">
+            <div class="stop-num">${i+1}</div>
+            <div class="stop-dest">${dest.icon} ${dest.name}</div>
+          </div>
+          <div class="j-fare">
+            <div class="fare-amt">₹${fare}</div>
+            <div class="fare-lbl">est. fare</div>
+          </div>
+        </div>
+        <div class="j-route">
+          <span class="route-lbl">Board</span>
+          <span class="station-chip">🚇 ${prevSt.name}</span>
+          <span class="route-arrow">→</span>
+          <span class="route-lbl">Alight</span>
+          <span class="station-chip">🚇 ${alightSt.name}</span>
+        </div>
+        <div class="j-meta">
+          <span class="line-badge ${lineCss(line)}">${lineEmoji(line)} ${line} Line</span>
+          <span class="meta-pill">🕐 ~${mins} min</span>
+          <span class="meta-pill">🔢 ~${stops} stops</span>
+        </div>
+      </div>`;
+
+    prevSt = alightSt;
+    return html;
+  });
+
+  const totalMins = totalStops * 3;
+
+  const html = `
+    <div class="summary-card">
+      <div class="summary-title">Your Journey Plan</div>
+      <div class="summary-sub">Optimised with nearest-neighbour routing</div>
+      <div class="summary-stats">
+        <div class="stat-item">
+          <div class="stat-value">${orderedDests.length}</div>
+          <div class="stat-label">Stops</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">₹${totalFare}</div>
+          <div class="stat-label">Total Fare</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">${totalMins}m</div>
+          <div class="stat-label">Est. Time</div>
+        </div>
+      </div>
+    </div>
+    <div class="route-origin">
+      🚉 Starting from <strong style="margin:0 4px;">${boardingSt.name}</strong>
+      <span class="line-badge ${lineCss(boardingSt.line)}" style="margin-left:auto;">${boardingSt.line} Line</span>
+    </div>
+    ${cards.join('')}
+    <div class="total-card">
+      <div class="total-lbl">Total Estimated Fare</div>
+      <div class="total-amt">₹${totalFare}</div>
+      <div class="total-note">Based on straight-line distance · Actual fares may vary</div>
+    </div>`;
+
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = html;
+  resultsEl.classList.remove('hidden');
+  document.getElementById('reset-wrap').classList.remove('hidden');
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════
+
+function resetAll() {
+  userLoc = null;
+  selectedDests = [];
+
+  document.getElementById('detect-btn').disabled = false;
+  document.getElementById('loc-status').innerHTML = '';
+  document.getElementById('nearby-wrap').innerHTML = '';
+  document.getElementById('area-wrap').innerHTML = '';
+  document.getElementById('dest-input').value = '';
+  renderChips();
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('reset-wrap').classList.add('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Init dropdown
+openDropdown();
+document.getElementById('dest-dd').classList.remove('show');
+</script>
+</body>
+</html>
